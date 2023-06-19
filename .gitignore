@@ -1,6 +1,8 @@
-.vscode/
-*.pdf
-*.aux
-primo_elaborato
-secondo_elaborato
-pdc/primo_elaborato/documentazione_primo_elaborato.pdf
+# Default ignored files
+/shelf/
+/workspace.xml
+/.idea/
+/model/__pycache__/
+/__pycache__/
+/cache/
+/results/

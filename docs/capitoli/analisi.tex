@@ -1,0 +1,160 @@
+\chapter{Analisi Risultati}
+I test presentati sono compiuti evidenziando l'impatto scaturito della variabile momento sull'andamento dell'errore per i casi di test analizzati.\\
+Le valutazioni considerano fissato il numero di epoche a $200$ e sono poste a coppie per comparare due casi per volta con valore della variabile momento rispettivamente di $0.4$ e $0.8$. Oltre al numero di epoche, è fissato per ogni coppia il numero di neuroni e il valore del learning rate che oscilla tra $0.00001$ e $0.0001$. \\
+Altri parametri sono: funzione di errore \textit{cross entropy softmax}, funzione di attivazione per lo strato \textit{tanh} e funzione per lo strato di output \textit{identità}.\\
+I parametri descritti sono presenti nel file \texttt{properties.ini}.
+{\clearpage}
+\section{Analisi 5 nodi interni}
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/5-neurons-1e-05-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/5-neurons-1e-05-rate-0.8-momentum.png}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-05, 5 neuroni con momento variabile}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/5-neurons-0.0001-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/5-neurons-0.0001-rate-0.8-momentum.png}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-04, 5 neuroni con momento variabile}
+\end{center}
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    n=5 & \multicolumn{2}{c|}{Learning rate} \\
+    \hline
+    Momento & 0.00001 & 0.0001 \\
+    \hline
+    0.4 & Valore 3 & Valore 4 \\
+    \hline
+    0.8 & Valore 5 & Valore 6 \\
+    \hline
+    \end{tabular}
+    \caption{Risultati accuratezza con numero neuroni pari a 5}
+\end{table}
+
+\section{Analisi 10 nodi interni}
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/10-neurons-1e-05-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/10-neurons-1e-05-rate-0.8-momentum.png}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-05, 10 neuroni con momento variabile}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/10-neurons-0.0001-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/10-neurons-0.0001-rate-0.8-momentum.png}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-04, 10 neuroni con momento variabile}
+\end{center}
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    n=5 & \multicolumn{2}{c|}{Learning rate} \\
+    \hline
+    Momento & 0.00001 & 0.0001 \\
+    \hline
+    0.4 & Valore 3 & Valore 4 \\
+    \hline
+    0.8 & Valore 5 & Valore 6 \\
+    \hline
+    \end{tabular}
+    \caption{Risultati accuratezza con numero neuroni pari a 10}
+\end{table}
+
+\section{Analisi 20 nodi interni}
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/20-neurons-1e-05-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/20-neurons-1e-05-rate-0.8-momentum.png}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-05, 20 neuroni con momento variabile}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/20-neurons-0.0001-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/20-neurons-0.0001-rate-0.8-momentum.png}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-04, 20 neuroni con momento variabile}
+\end{center}
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    n=5 & \multicolumn{2}{c|}{Learning rate} \\
+    \hline
+    Momento & 0.00001 & 0.0001 \\
+    \hline
+    0.4 & Valore 3 & Valore 4 \\
+    \hline
+    0.8 & Valore 5 & Valore 6 \\
+    \hline
+    \end{tabular}
+    \caption{Risultati accuratezza con numero neuroni pari a 20}
+\end{table}
+
+\section{Analisi 30 nodi interni}
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/30-neurons-1e-05-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/30-neurons-1e-05-rate-0.8-momentum.png}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-05, 30 neuroni con momento variabile}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/30-neurons-0.0001-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/30-neurons-0.0001-rate-0.8-momentum.png}
+\label{fig:n5-m0.8-l0.00001}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-04, 30 neuroni con momento variabile}
+\end{center}
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    n=5 & \multicolumn{2}{c|}{Learning rate} \\
+    \hline
+    Momento & 0.00001 & 0.0001 \\
+    \hline
+    0.4 & Valore 3 & Valore 4 \\
+    \hline
+    0.8 & Valore 5 & Valore 6 \\
+    \hline
+    \end{tabular}
+    \caption{Risultati accuratezza con numero neuroni pari a 30}
+\end{table}
+
+\section{Analisi 50 nodi interni}
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/50-neurons-1e-05-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/50-neurons-1e-05-rate-0.8-momentum.png}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-05, 50 neuroni con momento variabile}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.49\linewidth]{results/50-neurons-0.0001-rate-0.4-momentum.png}
+\includegraphics[width=0.49\linewidth]{results/50-neurons-0.0001-rate-0.8-momentum.png}
+\captionof{figure}{Andamento errore con learning rate fissato a 1e-04, 50 neuroni con momento variabile}
+\end{center}
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    n=5 & \multicolumn{2}{c|}{Learning rate} \\
+    \hline
+    Momento & 0.00001 & 0.0001 \\
+    \hline
+    0.4 & Valore 3 & Valore 4 \\
+    \hline
+    0.8 & Valore 5 & Valore 6 \\
+    \hline
+    \end{tabular}
+    \caption{Risultati accuratezza con numero neuroni pari a 50}
+\end{table}
+
+{\clearpage}
+\section{Considerazioni}
+I grafici dell'andamento dell'errore sono posti in relazione fissando il numero di neuroni e il valore del learning rate e analizzando l'andamento solo sulla variabile momento per derivarne l'impatto.\\
+Si deduce dopo una prima analisi che l'andamento dell'errore sia influenzato tale variabile, difatti il numero di epoche necessarie per scovare un \textbf{minimo locale} diminuisce; col quale la rete termina nella maggior parte delle analisi evidenziate.\\
+Oltre all'influenza esercitata sulla velocità sembra anche esser presente, da un certo numero di neuroni in poi, la \textbf{capacità di attenuare la curva di errore} diminuendo in maniera considerevole l'errore compiuto.\\
+I risultati degli errori si dividono in due fasce :
+\begin{itemize}
+    \item i casi di test con numero neuroni maggiore di 5: con momento pari 0.8 ripropongo gli stessi massimi e minimi locali del corrispettivo andamento con valore 0.4, ma con un valore assoluto minore accelerando quindi l'apprendimento
+    \item al contrario il test compiuto con valore 0.8 del momento su 5 neuroni dello strato interno ottiene un risultato peggiore all'aumentare del valore del momento.
+\end{itemize}
+L'analisi evidenza quanto il valore del momento possa far accelerare l'apprendimento in regioni piatte, consentendo alla rete di apprendere con un numero minore di epoche il problema in esame.\\
+Oltre alla considerazione enunciata, risalta una \textbf{correlazione tra complessità della rete e momento}, ricordando che un numero minore di neuroni implica un numero minore di connessioni. \\
+Le valutazioni si focalizzano sull'impatto del momento sull'errore commesso, ma al contempo dimostrano anche l'impatto che determina il valore del learning rate. Il \textbf{learning rate fissa la velocità di apprendimento} di una rete e per i casi esaminati è considerato il valore $0.00001$ e il valore $0.0001$. Considerando tutte le coppie di test in esame con learning rate pari a $0.0001$ si nota una maggiore oscillazione dell'errore commesso, il che indica quanto un valore relativamente alto per una rete possa inficiare sulla sua capacità di apprendere aumentando in maniera considerevole il numero di epoche necessarie per raggiungere un discreto valore di errore. I risultati ottenuti sottolineano che per i parametri fissati e il problema di classificazione MNIST, sia ottimale il valore $0.0001$ del learning rate.  

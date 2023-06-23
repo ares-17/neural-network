@@ -30,6 +30,3 @@ class Analysis:
 
     def get_result_path_error(self, name):
         return os.path.join(os.getcwd(), "results/errors", name + ".png")
-
-    def get_result_path_accuracy(self, name):
-        return os.path.join(os.getcwd(), "results/accuracies", name + ".png")

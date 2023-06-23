@@ -13,7 +13,7 @@ Di seguito una breve introduzione della disposizione e caratteristiche dei file:
     \end{itemize}
 \end{itemize}
 
-\subsection{Definizione parametri}
+\section{Definizione parametri}
 Il paragrafo della definizione dei parametri è anteposto ad altri di maggiore importanza per consentire al lettore una facile interpretazione dei paragrafi successivi. \\
 I parametri sono definiti nel file \underline{properties.ini} nella seguente forma:
 \begin{lstlisting}[language=C]
@@ -34,9 +34,76 @@ La variabile \texttt{momentum} è un gruppo di valori, separati da virgole, che 
 Il termine \texttt{epochs} indica il numero di epoche applicate a tutti i casi di test. \\
 Il \texttt{learning\_rate} indica la serie di valori da considerare nell'aggiornamento dei pesi. Ogni valore è considerato sull'intera rete. \\
 \texttt{act\_functions} specifica le due funzioni di attivazioni considerate rispettivamente per lo strato interno e lo strato di output. \\
-\texttt{error\_function} indica quale funzione di errore utilizzare. La scelta ricade tra : \texttt{cross-entropy} , \texttt{cross-entropy-softmax}, \texttt{mean-square-error}. Per ottenere risultati consistenti l'analisi è proposta con la funzione \texttt{cross-entropy-softmax} come funzione di errore e \texttt{tanh} e \texttt{identità} come funzioni di attivazione.
+\texttt{error\_function} indica quale funzione di errore utilizzare. La scelta ricade tra : \texttt{cross-entropy} , \texttt{cross-entropy-softmax}, \texttt{mean-square-error}. Per ottenere risultati consistenti l'analisi è proposta con la funzione  \\ \texttt{cross-}\texttt{entropy-}\texttt{softmax} come funzione di errore e \texttt{tanh} e \texttt{identità} come funzioni di attivazione.
 
-\subsection{Creazione della rete}
+\section{Dataset}
+Sul dataset è applicata una fase di preprocessing sui dati.
+\begin{lstlisting}[language=Python]
+class Dataset:
+    def __init__(self, shuffle=False, validation_ratio=0.2, training_size=10000, test_size=2500):
+        self.train_data,self.train_label,self.test_data=...
+        self.test_label,self.valid_data,self.valid_label=...
+
+        self.shuffle = shuffle
+        self.validation_ratio = validation_ratio
+        self.training_size = training_size
+        self.test_size = test_size
+        self.data()
+
+    def data(self):
+        (self.train_data, self.train_label), (self.test_data, self.test_label) = mnist.load_data()
+
+        if self.shuffle:
+            self.train_data, self.train_label = self.permutation(...)
+            self.test_data, self.test_label = self.permutation(...)
+
+        self.train_data = self.prepare_data(self.train_data)
+        self.test_data = self.prepare_data(self.test_data)
+
+        self.train_data, self.train_label, self.valid_data, self.valid_label =  \
+            self.train_validation_split(...)
+
+        self.train_label = self.one_hot(self.train_label)
+        self.valid_label = self.one_hot(self.valid_label)
+        self.test_label = self.one_hot(self.test_label)
+
+    def permutation(self, dataset, label):
+        permutation = np.random.permutation(dataset.shape[0])
+        dataset = dataset[permutation]
+        label = label[permutation]
+        return dataset, label
+
+    def prepare_data(self, data):
+        shape = (data.shape[0], data.shape[1] * data.shape[1])
+        data = data.reshape(shape)
+        data = data.T
+        data = data / 255
+
+        return data
+
+    def train_validation_split(self, X, Y):
+        valid_size = int(X.shape[1] * self.validation_ratio)
+        train_data = X[:,:-valid_size]
+        train_label = Y[:-valid_size]
+        valid_data = X[:,-valid_size:]
+        valid_label = Y[-valid_size:]
+        return train_data, train_label, valid_data, valid_label
+
+    def one_hot(self, Y):
+        one_hot_Y = np.zeros((Y.size, Y.max() + 1))
+        one_hot_Y[np.arange(Y.size), Y] = 1
+        one_hot_Y = one_hot_Y.T
+        return one_hot_Y
+\end{lstlisting}
+Le operazioni di preprocessing applicate sono :
+\begin{itemize}
+    \item applicata funzione one hot sui valori target: associato il valore 1 alle classe del valore e 0 ad ogni altra classe
+    \item applicato uno shuffle dei dati sui dataset di input
+    \item suddivisione del dataset in training e validation set, oltre al test set già fornito
+    \item normalizzazione dei dati ottenendo valori compresi tra 0 ed 1
+\end{itemize}
+
+\section{Creazione della rete}
 La creazione della rete si basa sulla definizione dello strato interno e dello strato di output specificando le funzioni di attivazione, le corrispettive derivate, nonché il numero di neuroni dello strato interno.
 \begin{lstlisting}[language=Python]
 def get_layers(neurons, momentum, columns):
@@ -61,7 +128,7 @@ class Layer:
 \end{lstlisting}
 Le matrici di pesi e bias sono definite con valori generati casualmente seguendo una distribuzione uniforme gaussiana. I membri \texttt{dW\_prev} e \texttt{db\_prev} definiscono la derivata dei pesi precedente e la derivata dei bias precedente ed hanno le stesse dimensioni matriciali delle rispettive matrici. Essi risultano utili nel calcolo dell'aggiornamento dei pesi applicando il momentum. \\
 
-\subsection{Fase di Training}
+\section{Fase di Training}
 La fase di training è definita dal metodo principale \texttt{train} e definisce i passaggi base dell'algoritmo.
 \begin{lstlisting}[language=Python]
 def train(ds,layers,alpha,iterations,error_function):
@@ -156,15 +223,15 @@ w_{i,j} = w_{i,j} (- \eta * \frac{d}{dw_{i,j}}E^t + \alpha \cdot \Delta w_{i,j}^
 La regola di aggiornamento della discesa del gradiente, applicata considerando il parametro \texttt{momento}, considera il precedente valore assunto dal parametro con un tasso variabile indicato proprio dal momento $\alpha$. Il parametro risulta particolarmente utile per superare regioni di plateau, dove il valore e la direzione del peso rimangono invariati.  \\
 La regola della discesa del gradiente deriva il nuovo valore assoluto dalla moltiplicazione tra \texttt{learing\_rate} e derivata parziale della funzione di errore rispetto al peso corrente $w_{i,j}$. Un learning rate alto può portare una rapida convergenza del modello, rischiando di saltare un eventuale minimo globale o di oscillare intorno ad esso. Al contempo un valore basso per un caso specifico può causare aggiornamenti più piccoli, rallentando la convergenza. Allo stesso modo è di cruciale importanza porre un giusto valore al parametro $\alpha$.
 
-\subsection{Funzioni applicate}
+\section{Funzioni applicate}
 Di seguito sono presentate le funzioni applicate durante la fase di training e di evaluation dei risultati ottenuti, correlate da definizione matematica. Le funzioni denotate con $'$ sono le corrispondenti derivate parziali della funzione in esame.
-\subsubsection{Funzione softmax}
+\subsection{Funzione softmax}
 La funzione softmax è una funzione applicata all'output della rete con lo scopo di \underline{normalizzare i risultati} ottenuti durante il processo di training. Il processo di normalizzazione applicato dalla funzione deriva da valori grezzi ricavati dai nodi di output di una rete, applicata su un problema di classificazione, e produce un vettore di probabilità che indica quanto l'input in esame appartenga alla classe considerata. Formula matematica:
 \begin{align*}
 \text{S}(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{N} e^{z_j}}
 \end{align*}
 L'input $z_i$ della funzione è l'output di un nodo dell'ultimo strato e tale valore utilizzato come esponente di $e$ è diviso dalla somma di tutti i valori di output anch'essi posti come esponente della costante $e$.
-\subsubsection{Funzione tanh}
+\subsection{Funzione tanh}
 La funzione tanh calcola la tangente iperbolica del valore di input. La tangente iperbolica è una funzione che mappa i valori in un intervallo compreso tra -1 e 1 ed è simmetrica rispetto all'origine.\\
 Formule:
 Formula matematica:
@@ -174,7 +241,7 @@ Formula matematica:
 \begin{align*}
 \text{tanh}^{\prime}(x) = 1 - tanh(x)^2
 \end{align*}
-\subsubsection{Funzione sigmoide}
+\subsection{Funzione sigmoide}
 La funzione sigmoide traforma il valore di input in un valore compreso tra 0 ed 1. Per valori sempre più elevati il valore di ritorno dela funzione tende ad 1, in maniera speculare il valore tende a 0.
 \begin{align*}
 sigmoid(x) = \frac{1}{(1 + exp(-x))}
@@ -182,7 +249,7 @@ sigmoid(x) = \frac{1}{(1 + exp(-x))}
 \begin{align*}
 sigmoid^{\prime}(x) = sigmoid(x)(1 - sigmoid(x))
 \end{align*}
-\subsubsection{Funzione di errore cross-entropy}
+\subsection{Funzione di errore cross-entropy}
 La funzione cross entropy è una funzione che misura la discrepanza tra i valori predetti e valori target di un apprendimento di tipo supervisionato ed è applicata nei problemi di classificazione.
 \begin{align*}
 CE(p,q) = -\sum_{i} p(i) \log(q(i))
@@ -198,7 +265,7 @@ CE(p,q) = -\sum_{i} p(i) \log(q(i))
 \begin{align*}
 CE(p,q)^{\prime} = -\frac{p(i)}{q(i)}
 \end{align*}
-\subsubsection{Funzione sum of squares}
+\subsection{Funzione sum of squares}
 La funzione sum of squares calcola attraverso l'elevamento a potenza e della sottrazione, la differenza tra due distribuzioni di probabilità ed è comunemente utilizzata nei problemi di regressione.
 \begin{align*}
 \text{s}(x) = \sum_{i=1}^{n} (y_i - t_i)^2
@@ -207,13 +274,13 @@ La funzione sum of squares calcola attraverso l'elevamento a potenza e della sot
 \frac{\partial \text{s}(x)}{\partial x_i} = 2 (y_i - t_i)
 \end{align*}
 
-\subsection{Calcolo accuratezza}
+\section{Calcolo accuratezza}
 Il calcolo dell'accuratezza è compiuto eseguendo la divisione tra il numero di elementi correttamente predetti e il numero totale di input del caso di test.
 \begin{align*}
 \text{accuracy} = \frac{\text{\# label corrette}}{\text{\# totale label}}
 \end{align*}
 
-\subsection{Fase di Analisi}
+\section{Fase di Analisi}
 I dati raccolti durante la fase di addestramento sono poi interpretati con grafici nella fase di analisi. \\
 La fase di analisi è compiuta dalla classe \texttt{Analysis} che ad ogni esecuzione di nuovo addestramento e con una nuova combinazione dei parametri definiti dall'utente, raccoglie: l'errore compiuto sul training e validation set, oltre che l'accuratezza ottenuta, ad ogni epoca, sul test set. \\
 \begin{lstlisting}[language=Python]
@@ -235,23 +302,14 @@ class Analysis:
             'error_valid' : error_valid,
             'accuracy' : accuracy
         }
-
-    def save_charts(self):
-        for neurons, nested_dict in self.results.items():
-            for learning_rate, nested_nested_dict in nested_dict.items():
-                for momentum, metriche in nested_nested_dict.items():
-                    error_train = metriche['error_train']
-                    error_valid = metriche['error_valid']
-                    accuracy = metriche['accuracy']
-
-                    plt.plot(error_train, label='Train Error')
-                    plt.plot(error_valid, label='Valid Error')
-                    plt.xlabel('Epoch')
-                    plt.ylabel('Error')
-                    plt.title(...)
-                    plt.legend()
-                    plt.savefig(self.get_result_path_error(...))
-                    plt.close()
+        plt.plot(error_train, label='Train Error')
+        plt.plot(error_valid, label='Valid Error')
+        plt.xlabel('Epoch')
+        plt.ylabel('Error')
+        plt.title(...)
+        plt.legend()
+        plt.savefig(self.get_result_path_error(...))
+        plt.close()
 
     def get_result_path_error(self, name):
         return os.path.join(os.getcwd(), "results/errors", name + ".png")

@@ -92,7 +92,7 @@ def train(ds: Dataset, layers, alpha, iterations, error_function):
     accuracy, error_train, error_valid = np.empty(iterations), np.empty(iterations), np.empty(iterations)
     for i in range(iterations):
         forward_prop(ds.train_data, layers)
-        backward_prop(ds.train_data, ds.train_label, layers, error_function["derivative"], alpha)
+        backward_prop(ds.train_data, ds.train_label, layers, error_function["derivative"])
         update_params(alpha, layers)
 
         copy_layers = [layers[0].copy(), layers[1].copy()]

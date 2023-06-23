@@ -1,5 +1,5 @@
 import numpy as np
-
+import copy
 
 class Layer:
     def __init__(self, shape, activation, derivative, momentum=0):
@@ -29,3 +29,19 @@ class Layer:
 
         self.dW_prev = self.dW
         self.db_prev = self.db
+
+    def copy(self):
+        new_layer = Layer((self.W.shape[0], self.W.shape[1]), self.activation, self.derivative, self.momentum)
+        new_layer.W = copy.deepcopy(self.W)
+        new_layer.B = copy.deepcopy(self.B)
+        new_layer.dW_prev = copy.deepcopy(self.dW_prev)
+        new_layer.db_prev = copy.deepcopy(self.db_prev)
+        new_layer.A = copy.deepcopy(self.A)
+        new_layer.Z = copy.deepcopy(self.Z)
+        new_layer.dZ = copy.deepcopy(self.dZ)
+        new_layer.db = copy.deepcopy(self.db)
+        new_layer.dW = copy.deepcopy(self.dW)
+        new_layer.activation = self.activation
+        new_layer.derivative = self.derivative
+        new_layer.momentum = self.momentum
+        return new_layer

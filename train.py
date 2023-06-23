@@ -85,23 +85,24 @@ def update_params(alpha, layers):
     for layer in layers:
         layer.update_params(alpha)
 
-def gradient_descent(ds: Dataset, layers, alpha, iterations, error_function):
+def train(ds: Dataset, layers, alpha, iterations, error_function):
     """
     For each layer execute forward and back propagation, update params e store accuracy
     """
     accuracy, error_train, error_valid = np.empty(iterations), np.empty(iterations), np.empty(iterations)
     for i in range(iterations):
         forward_prop(ds.train_data, layers)
-        backward_prop(ds.train_data, ds.train_label, layers, error_function["derivative"])
+        backward_prop(ds.train_data, ds.train_label, layers, error_function["derivative"], alpha)
         update_params(alpha, layers)
 
-        accuracy[i] = current_accuracy(i, layers, ds.test_data , ds.test_label)
-        error_train[i] = get_error(ds.train_data, ds.train_label, layers, error_function["function"])
-        error_valid[i] = get_error(ds.valid_data, ds.valid_label, layers, error_function["function"])
+        copy_layers = [layers[0].copy(), layers[1].copy()]
+        accuracy[i] = current_accuracy(i, copy_layers, ds.test_data , ds.test_label)
+        error_train[i] = get_error(ds.train_data, ds.train_label, copy_layers, error_function["function"])
+        error_valid[i] = get_error(ds.valid_data, ds.valid_label, copy_layers, error_function["function"])
 
         progress_bar(i, iterations)
 
-    return error_train, error_valid, accuracy.max()
+    return error_train, error_valid, accuracy
 
 def progress_bar(current, total, bar_length=20):
     fraction = current / total

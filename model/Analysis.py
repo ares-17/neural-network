@@ -19,22 +19,17 @@ class Analysis:
             'error_valid' : error_valid,
             'accuracy' : accuracy
         }
+        plt.plot(self.results[neurons][rate][momentum]['error_train'], label='Train Error')
+        plt.plot(self.results[neurons][rate][momentum]['error_valid'], label='Valid Error')
+        plt.xlabel('Epoch')
+        plt.ylabel('Error')
+        plt.title(f'Neurons: {neurons}, Learning Rate: {rate}, Momentum: {momentum}')
+        plt.legend()
+        plt.savefig(self.get_result_path_error(f"{neurons}-neurons-{rate}-rate-{momentum}-momentum"))
+        plt.close()
 
-    def save_charts(self):
-        for neurons, nested_dict in self.results.items():
-            for learning_rate, nested_nested_dict in nested_dict.items():
-                for momentum, metriche in nested_nested_dict.items():
-                    error_train = metriche['error_train']
-                    error_valid = metriche['error_valid']
+    def get_result_path_error(self, name):
+        return os.path.join(os.getcwd(), "results/errors", name + ".png")
 
-                    plt.plot(error_train, label='Train Error')
-                    plt.plot(error_valid, label='Valid Error')
-                    plt.xlabel('Epoch')
-                    plt.ylabel('Error')
-                    plt.title(f'Neurons: {neurons}, Learning Rate: {learning_rate}, Momentum: {momentum}')
-                    plt.legend()
-                    plt.savefig(get_result_path(f"{neurons}-neurons-{learning_rate}-rate-{momentum}-momentum"))
-                    plt.close()
-
-    def get_result_path(name):
-        return os.path.join(os.getcwd(), "results", name + ".png")
+    def get_result_path_accuracy(self, name):
+        return os.path.join(os.getcwd(), "results/accuracies", name + ".png")

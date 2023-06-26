@@ -8,8 +8,11 @@ To run the project on your operating system make sure you already have python 3 
    RUN pip install pandas
 ```
 ## Docker
-If you have a docker environment run the build phase with the command ```docker build -t nndl .``` in the project folder once.
-To test the changes or to run the neural network, execute  ```docker container run --rm -v .:/app nndl```.
+If you have a docker environment:
+```
+docker build -t nndl .                    # run the build phase 
+docker container run --rm -v .:/app nndl  # to test changes
+```
 
 ## Results
 With local or dockerize, project's execution create a plot of errors for each combination of learning rate, momentum and number of neurons. These results are stored in ```result/errors``` folder and any other information, such as parameters and accuracy, are stored as logs in ```events.log``` in the same path. <br>

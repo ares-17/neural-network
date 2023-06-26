@@ -1,10 +1,11 @@
 \chapter{Intro}
 La relazione descrive le caratteristiche di un algoritmo in grado di addestrare una rete neurale di tipo \underline{feed-forward e full-connected}\footnotemark con uno strato interno ed uno esterno. \\
-La fase di training della rete è compiuta sul dataset MNIST, un dataset di digit dei numeri 0-9. Deriva che la rete abbia come strato di output uno strato immutabile nella sua dimensione di dieci neuroni, uno per ogni categoria del problema da classificare. \\
-In particolare la rete utilizza una versione dell'algoritmo di back propagation con gradient descent applicato con la variabile \texttt{momentum}\footnotemark.\\
-Il progetto python proposto tenta di analizzare le performance della rete confrontando i diversi risultati ottenuti variando tre parametri : \texttt{learning rate}, \texttt{momentum} e numero neuroni interni, fissando al contempo le funzioni di attivazione, di errore.\\
-Segue una sezione per l'analisi del progetto e una sezione di analisi delle performance ottenute confrontando i vari risultati. Infine si propongono nuovi sviluppi.
+La fase di training della rete è compiuta sul dataset MNIST, un dataset di digit di numeri 0-9. Deriva che la rete abbia come strato di output uno strato immutabile nella sua dimensione di dieci neuroni, uno per ogni categoria del problema da classificare. \\
+In particolare la rete utilizza una versione dell'algoritmo di back propagation con gradient descent ed applicato con la variabile \texttt{momentum}\footnotemark.\\
+Il progetto python proposto tenta di analizzare le performance della rete confrontando i diversi risultati ottenuti e variando tre parametri : \texttt{learning rate}, \texttt{momentum} e numero neuroni interni, fissando al contempo le funzioni di attivazione e di errore.\\
+Segue una sezione per l'analisi del progetto e una sezione di analisi delle performance ottenute confrontando i vari risultati. Infine si propongono nuovi sviluppi.\\
+Per una maggiore chiarezza sono elencate porzioni di codice esemplificative per aiutare il lettore ad seguire concettualmente l'implementazione in esame. Le porzioni di codice fornite sono ridotte di righe e variabili per favorirne la lettura. 
 
-\footnotetext{La rete presentata è feed-forward poiché non presenta cicli ed è full-connected poiché ogni neuroni di uno strato $i$ è connesso ad ogni altro neurone dello strato $i-1$.}
+\footnotetext{Una rete è \texttt{feed-forward} se non presenta cicli e \texttt{full-connected} se ogni neurone $j$ di uno strato $i$ è connesso ad ogni altro neurone dello strato $i-1$.}
 
 \footnotetext{La variabile \texttt{momentum} è aggiunta all'algoritmo di aggiornamento dei pesi per velocizzare l'apprendimento in zone piatte, ovvero dove la derivata del peso ricada in una zona con valori pressoché costanti}

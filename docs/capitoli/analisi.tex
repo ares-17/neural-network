@@ -1,13 +1,19 @@
 \chapter{Analisi Risultati}
-I test presentati sono compiuti evidenziando l'impatto scaturito della variabile momento sull'andamento dell'errore per i casi di test analizzati.\\
-Le valutazioni considerano fissato il numero di epoche a $200$ e sono poste a coppie per comparare due casi per volta con valore della variabile momento rispettivamente di $0.4$ e $0.8$. Oltre al numero di epoche, sono fissati per ogni coppia il numero di neuroni e il valore del learning rate che oscilla tra $1e^{-05}$ e $1e^{-06}$. \\
-Altri parametri sono: 
+I test presentati sono compiuti evidenziando l'impatto scaturito dalla variabile \texttt{momentum} e dalla \texttt{learning\_rate} sull'andamento dell'errore per i casi di test analizzati.\\
+I casi di test sono posti a coppie per comparare gli impatti delle variabili; con momento che oscilla tra  $0.4$ e $0.8$ e learning rate che oscilla tra $1e^{-05}$ e $1e^{-06}$, fissando il numero di neuroni in esame. \\
+I parametri fissi per tutti i casi di test sono: 
 \begin{itemize}
     \item funzione di errore \textit{cross entropy softmax}
     \item funzione di attivazione per lo strato interno \textit{tanh}
     \item funzione per lo strato di output \textit{identità}
+    \item numero epoche fissato a 200
+    \item numero elementi training set: 48000
+    \item numero elementi test set: 10000
+    \item numero elementi validation set: 12000
+    \item numero feature immagine: 784
+    \item numero strai interni: 1
 \end{itemize}
-I parametri descritti sono presenti nel file \texttt{properties.ini}.
+Alcuni dei parametri descritti sono presenti nel file \texttt{properties.ini}.
 {\clearpage}
 \section{Analisi 5 nodi interni}
 \begin{center}
@@ -53,7 +59,7 @@ I parametri descritti sono presenti nel file \texttt{properties.ini}.
     \centering
     \begin{tabular}{|c|c|c|}
     \hline
-    n=5 & \multicolumn{2}{c|}{Learning rate} \\
+    n=10 & \multicolumn{2}{c|}{Learning rate} \\
     \hline
     Momento & 1e-05 & 1e-06 \\
     \hline
@@ -81,7 +87,7 @@ I parametri descritti sono presenti nel file \texttt{properties.ini}.
     \centering
     \begin{tabular}{|c|c|c|}
     \hline
-    n=5 & \multicolumn{2}{c|}{Learning rate} \\
+    n=20 & \multicolumn{2}{c|}{Learning rate} \\
     \hline
     Momento & 1e-05 & 1e-06 \\
     \hline
@@ -110,7 +116,7 @@ I parametri descritti sono presenti nel file \texttt{properties.ini}.
     \centering
     \begin{tabular}{|c|c|c|}
     \hline
-    n=5 & \multicolumn{2}{c|}{Learning rate} \\
+    n=30 & \multicolumn{2}{c|}{Learning rate} \\
     \hline
     Momento & 1e-05 & 1e-06 \\
     \hline
@@ -138,7 +144,7 @@ I parametri descritti sono presenti nel file \texttt{properties.ini}.
     \centering
     \begin{tabular}{|c|c|c|}
     \hline
-    n=5 & \multicolumn{2}{c|}{Learning rate} \\
+    n=50 & \multicolumn{2}{c|}{Learning rate} \\
     \hline
     Momento & 1e-05 & 1e-06 \\
     \hline
@@ -152,16 +158,17 @@ I parametri descritti sono presenti nel file \texttt{properties.ini}.
 
 {\clearpage}
 \section{Considerazioni}
-I grafici dell'andamento dell'errore sono posti in relazione fissando il numero di neuroni e il valore del learning rate e analizzando l'andamento solo sulla variabile momento per derivarne l'impatto.\\
-Si deduce dopo una prima analisi che l'andamento dell'errore sia influenzato da tale variabile, difatti il numero di epoche necessarie per scovare un \textbf{minimo locale} diminuisce; col quale la rete termina nella maggior parte delle analisi evidenziate.\\
-Oltre all'influenza esercitata sulla velocità sembra anche esser presente da un certo numero di neuroni in poi, la \textbf{capacità di inasprire la curva di errore} : aumentando il valore assoluto di massimi locali e di accentuando le curve analizzate. \\
-I risultati di errore ed accuratezza si dividono in due fasce :
+I grafici dell'andamento dell'errore sono posti in relazione fissando il numero di neuroni, il valore del learning rate e analizzando l'andamento sulla variabile momento per derivarne l'impatto.\\
+Si deduce dopo una prima analisi che l'andamento dell'errore sia influenzato dal valore del momento, difatti il numero di epoche necessarie per scovare un \textbf{minimo locale} diminuisce all'aumento del valore. Nella maggior parte dei casi le curve terminano l'esecuzione con il primo minimo locale determinato.\\
+Oltre all'influenza esercitata sulla velocità sembra anche esser presente, da un certo numero di neuroni in poi, la \textbf{capacità di inasprire la curva di errore} : aumentando il valore assoluto di massimi locali e di accentuando le curve analizzate. \\
+I risultati di errore ed accuratezza si differenziano:
 \begin{itemize}
-    \item per un numero di neuroni maggiore di 510 si ottiene un peggioramento dell'accuratezza al diminuire del learning rate. Inoltre per i casi considerati, il valore 0.8 del momento attesta quasi sempre un risultato migliore di accuratezza.
-    \item al contrario sui test compiuti su 5 neuroni si nota come sia presente un massimo locale che è accentuato dall'aumentare del valore del momentum. Presente inoltre anche un drastico aumento dell'accuratezza al diminuire del learning rate che è condiviso con un numero di neuroni pari a 10, anche se in maniera meno evidente.
+    \item per un numero di neuroni maggiore di 10 si ottiene un peggioramento dell'accuratezza al diminuire del learning rate. Difatti nella fascia di neuroni considerata, il valore $1e^{-05}$ del learning rate migliora le performance rilevate sul test set,
+    \item sui test compiuti su 5 neuroni si nota come sia presente un massimo locale che è accentuato dall'aumentare del valore del momento. Al contrario dei casi considerati precedentemente, l'aumento in valore del learning rate comporta un peggioramento delle prestazioni di accuratezza.
 \end{itemize}
-L'analisi evidenza quanto il valore del momento possa far accelerare l'apprendimento in regioni piatte, consentendo alla rete di apprendere con un numero minore di epoche il problema in esame.
-Ricordando le ipotesi dei test effettuati indicate precedentemente (in particolare la cardinalità ridotta del training set) e derivando dalle analisi sull'accuratezza che questa cala all'aumentare dei neuroni, i test potrebbero presentare un caso di overfitting : difatti all'aumentare del numero di neuroni (simbolico è il test con 50 neuroni e learning rate $1e^{-05}$) l'errore commesso sul validation set si stabilizza mentre l'errore sul training compie miglioramenti sempre più lievi.\\
-Per affrontare tale problema si potrebbe pensare di aumentare la cardinalità del training set e di applicare il criterio di \textit{early stopping}, terminando l'addestramento prima del numero stabilito di epoche se il validation set inizia la fase di stabilizzazione o di peggioramento.\\
-Le valutazioni si focalizzano sull'impatto del momento sull'errore commesso, ma al contempo dimostrano anche l'impatto che determina il valore del learning rate. Il \textbf{learning rate fissa la velocità di apprendimento} di una rete e per i casi esaminati è considerato il valore $1e^{-05}$ e il valore $1e^{-06}$. Considerando tutte le coppie di test in esame con learning rate pari a $1e^{-06}$ si nota un più lento apprendimento, il che potrebbe esser equiparato da un numero maggiore di epoche. Oltre al lento apprendimento della rete, salta all'occhio anche un minore appiattimento della curva dell'errore sul validation set: tenendo conto di quanto detto prima, tale considerazione comporta un risultato relativamente migliore e che quindi con un numero maggiore di epoche sembra indicare delle performance migliori della rete rispetto ai test con valore $1e^{-05}$.Inoltre dall'analisi scaturisce quanto un valore relativamente alto per una rete possa inficiare sulle sue capacità di apprendere saltando eventuali minimi locali. \\
-Riguardo l'accuratezza, i risultati migliori sono ottenuti da 5 e 10 neuroni, con un picco del $68\%$. Questo dimostra quanto aumentare solo il numero maggiore di neuroni, e di conseguenza di connessioni, possa non bastare per ottenere migliori performance ma anzi le posso peggiorare.  
+L'analisi evidenza quanto il valore del momento possa far accelerare l'apprendimento in regioni piatte, consentendo alla rete di apprendere il problema in esame con un numero minore di epoche.
+Ricordando le ipotesi dei test effettuati indicate precedentemente (in particolare le funzioni considerate) e derivando dalle analisi sull'accuratezza che questa cala all'aumentare dei neuroni, i test potrebbero presentare un caso di overfitting : difatti all'aumentare del numero di neuroni (simbolico è il test con 50 neuroni e learning rate $1e^{-05}$) l'errore commesso sul validation set si stabilizza mentre l'errore sul training compie miglioramenti sempre più lievi.\\
+Per affrontare tale problema si potrebbe pensare di aumentare la cardinalità del training set diminuendo  test e validation set, modificando le funzioni e applicando il criterio di \textit{early stopping}, terminando l'addestramento prima del numero stabilito di epoche se il validation set inizia la fase di stabilizzazione o di peggioramento.\\
+Le valutazioni si focalizzano sull'impatto del momento sull'errore commesso, ma al contempo dimostrano anche l'impatto che determina il valore del learning rate. Il \textbf{learning rate fissa la velocità di apprendimento} di una rete e per i casi esaminati è considerato il valore $1e^{-05}$ e il valore $1e^{-06}$. Considerando tutte le coppie di test in esame con learning rate pari a $1e^{-06}$ si nota un più lento apprendimento, il che potrebbe esser equiparato da un numero maggiore di epoche. Oltre al lento apprendimento della rete, salta all'occhio anche un minore appiattimento della curva dell'errore sul validation set: tenendo conto di quanto detto prima, tale considerazione comporta un risultato relativamente migliore e che quindi con un numero maggiore di epoche sembra indicare delle performance migliori della rete rispetto ai test con valore $1e^{-05}$. Inoltre dall'analisi scaturisce quanto un valore relativamente alto per una rete possa inficiare sulle sue capacità di apprendere, saltando eventuali minimi locali. \\
+Considerando anche che tutti i casi di test sono compiuti sulla totalità delle feature (784), nelle reti feed-forward e full-connected questo comporta una cardinalità elevata del numero di connessioni tra lo strato di input e il primo strato interno. Fissato un numero di elementi di input del training set, un numero elevato di feature considerate può comportare una maggiore difficoltà per la rete nell'apprendimento. Si potrebbe considerare di diminuire il numero di feature, ad esempio con immagini 14x14 piuttosto che 28x28, oppure di aumentare gli elementi del training considerati. \\ 
+Riguardo l'accuratezza, i risultati migliori sono ottenuti da 5 e 10 neuroni, con un picco del $68\%$. Questo dimostra quanto aumentare solo il numero maggiore di neuroni, e di conseguenza di connessioni, possa non bastare per ottenere migliori performance ma anzi possa essere controproducente.  

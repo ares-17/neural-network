@@ -1,5 +1,5 @@
 \chapter{Implementazione}
-Il progetto è scritto in \href{https://www.python.org/downloads/release/python-3110/}{Python 3.11} e segue le caratteristiche introdotte, rimanendo flessibile per l'introduzione di nuove feature. La libreria magiormente utilizzata è \texttt{numpy} che favorisce la scrittura di codice meno propenso ad errori offrendo metodi in grado di ottimizzare i calcoli compiuti. \\
+Il progetto è scritto in \href{https://www.python.org/downloads/release/python-3110/}{Python 3.11} e segue le caratteristiche introdotte, rimanendo flessibile per l'introduzione di nuove feature. La libreria maggiormente utilizzata è \href{https://numpy.org/}{NumPy} che favorisce la scrittura di codice meno propenso ad errori, offrendo metodi in grado di ottimizzare i calcoli compiuti. \\
 Di seguito una breve introduzione della disposizione e caratteristiche dei file:
 \begin{itemize}
     \item \textbf{main.py} : inizializza gli oggetti principali ed esegue la fase di addestramento della rete in base ai parametri definiti, per poi valutarne i risultati
@@ -15,7 +15,7 @@ Di seguito una breve introduzione della disposizione e caratteristiche dei file:
 
 \section{Definizione parametri}
 Il paragrafo della definizione dei parametri è anteposto ad altri di maggiore importanza per consentire al lettore una facile interpretazione dei paragrafi successivi. \\
-I parametri sono definiti nel file \underline{properties.ini} nella seguente forma:
+I parametri sono definiti nel file \underline{properties.ini} nella seguente forma di esempio:
 \begin{lstlisting}[language=C]
 [main]
 configuration = test
@@ -27,14 +27,16 @@ epochs = 100
 learning_rate = 0.0001
 act_functions = tanh, identity
 error_function = cross-entropy-softmax
+hidden_layers = 1
 \end{lstlisting}
 Dove il valore definito in \texttt{configuration} indica quale serie di parametri sono considerati, in tal caso quelli contenuti nel gruppo "test". \\
 La variabile \texttt{neurons} indica il numero di neuroni contenuti nel singolo strato interno, mentre lo strato di output è composto in ogni modo da 10 neuroni.\\
 La variabile \texttt{momentum} è un gruppo di valori, separati da virgole, che indica per ogni iterazione del test quali valori considerare. A tutti gli strati sono associati gli stessi valori del momentum considerato. \\
 Il termine \texttt{epochs} indica il numero di epoche applicate a tutti i casi di test. \\
 Il \texttt{learning\_rate} indica la serie di valori da considerare nell'aggiornamento dei pesi. Ogni valore è considerato sull'intera rete. \\
-\texttt{act\_functions} specifica le due funzioni di attivazioni considerate rispettivamente per lo strato interno e lo strato di output. \\
-\texttt{error\_function} indica quale funzione di errore utilizzare. La scelta ricade tra : \texttt{cross-entropy} , \texttt{cross-entropy-softmax}, \texttt{mean-square-error}. Per ottenere risultati consistenti l'analisi è proposta con la funzione  \\ \texttt{cross-}\texttt{entropy-}\texttt{softmax} come funzione di errore e \texttt{tanh} e \texttt{identità} come funzioni di attivazione.
+L'\texttt{act\_functions} specifica le due funzioni di attivazioni considerate rispettivamente per lo strato interno e lo strato di output. \\
+Il valore \texttt{hidden\_layers} indica il numero di strati nascosti della rete.
+L'\texttt{error\_function} indica quale funzione di errore utilizzare. La scelta ricade tra : \texttt{cross-entropy} , \texttt{cross-entropy-softmax}, \texttt{mean-square-error}. Per ottenere risultati consistenti l'analisi è proposta con la funzione  \\ \texttt{cross-}\texttt{entropy-}\texttt{softmax} come funzione di errore e \texttt{tanh} e \texttt{identità} come funzioni di attivazione.
 
 \section{Dataset}
 Sul dataset è applicata una fase di preprocessing sui dati.
@@ -54,14 +56,13 @@ class Dataset:
         (self.train_data, self.train_label), (self.test_data, self.test_label) = mnist.load_data()
 
         if self.shuffle:
-            self.train_data, self.train_label = self.permutation(...)
-            self.test_data, self.test_label = self.permutation(...)
+            self.train_data = self.permutation(...)
+            self.test_data = self.permutation(...)
 
         self.train_data = self.prepare_data(self.train_data)
         self.test_data = self.prepare_data(self.test_data)
 
-        self.train_data, self.train_label, self.valid_data, self.valid_label =  \
-            self.train_validation_split(...)
+        self.train_data, ... = self.train_validation_split(...)
 
         self.train_label = self.one_hot(self.train_label)
         self.valid_label = self.one_hot(self.valid_label)
@@ -97,7 +98,7 @@ class Dataset:
 \end{lstlisting}
 Le operazioni di preprocessing applicate sono :
 \begin{itemize}
-    \item applicata funzione one hot sui valori target: associato il valore 1 alle classe del valore e 0 ad ogni altra classe
+    \item applicata funzione \textit{one hot} sui valori target: associato il valore 1 alle classe corretta e 0 ad ogni altra classe
     \item applicato uno shuffle dei dati sui dataset di input
     \item suddivisione del dataset in training e validation set, oltre al test set già fornito
     \item normalizzazione dei dati ottenendo valori compresi tra 0 ed 1
@@ -106,17 +107,20 @@ Le operazioni di preprocessing applicate sono :
 \section{Creazione della rete}
 La creazione della rete si basa sulla definizione dello strato interno e dello strato di output specificando le funzioni di attivazione, le corrispettive derivate, nonché il numero di neuroni dello strato interno.
 \begin{lstlisting}[language=Python]
-def get_layers(neurons, momentum, columns):
-    return [
-        Layer((neurons, columns), ReLU, ReLU_deriv, momentum), 
-        Layer((10, neurons), softmax, ReLU_deriv, momentum)
-    ]
+def get_layers(hidden_layers, neurons, momentum, columns, act_functions):
+    layers = []
+    row_layer, columns_layer = neurons, columns
+    for i in range(hidden_layers):
+        layers.append(Layer((row_layer, columns_layer), ...)
+
+    layers.append(Layer((10, columns_layer), ...)
+    return layers
 \end{lstlisting}
 Il parametro \texttt{neurons} contiene il numero di neuroni definito nel file \underline{properties.ini}, mentre \texttt{columns} il numero di feature dello strato di input che nel dataset MNIST corrisponde a 28x28 celle di una singola immagine. \\
 L'istanziazione della classe \texttt{Layer} avviene con la chiamata al costruttore:
 \begin{lstlisting}[language=Python]
 class Layer:
-    def __init__(self, shape, activation, derivative, momentum=0):
+    def __init__(self,shape,activation,derivative,momentum=0):
         self.W = np.random.normal(0, 0.1, (shape[0], shape[1]))
         self.B = np.random.normal(0, 0.1, (shape[0], 1))
         self.activation = activation
@@ -126,40 +130,50 @@ class Layer:
         self.db_prev = np.zeros_like(self.B)
         self.A, self.Z, self.dZ, self.db, self.dW = None, None, None, None, None
 \end{lstlisting}
-Le matrici di pesi e bias sono definite con valori generati casualmente seguendo una distribuzione uniforme gaussiana. I membri \texttt{dW\_prev} e \texttt{db\_prev} definiscono la derivata dei pesi precedente e la derivata dei bias precedente ed hanno le stesse dimensioni matriciali delle rispettive matrici. Essi risultano utili nel calcolo dell'aggiornamento dei pesi applicando il momentum. \\
+Le matrici di pesi e bias sono definite con valori generati casualmente seguendo una distribuzione uniforme gaussiana. I membri \texttt{dW\_prev}, \texttt{db\_prev} definiscono la derivata dei pesi precedente, la derivata dei bias precedente ed hanno dimensioni identiche rispettivamente per \texttt{W} e \texttt{B}. Essi risultano utili nel calcolo dell'aggiornamento dei pesi applicando il momentum. \\
 
 \section{Fase di Training}
 La fase di training è definita dal metodo principale \texttt{train} e definisce i passaggi base dell'algoritmo.
 \begin{lstlisting}[language=Python]
-def train(ds,layers,alpha,iterations,error_function):
-    accuracy, error_train, error_valid = #... empty arrays
+def train(ds: Dataset, layers, alpha, iterations, error_function):
+    accuracy, error_train, error_valid = ...
     for i in range(iterations):
         forward_prop(ds.train_data, layers)
-        backward_prop(ds.train_data, ds.train_label ..)
+        backward_prop(ds.train_data, ...)
         update_params(alpha, layers)
 
-        accuracy[i] = current_accuracy(ds.test...)
-        error_train[i] = get_error(ds.train ...)
-        error_valid[i] = get_error(ds.valid ... )
+        copy_layers = [l.copy() for l in layers]
+        accuracy[i] = current_accuracy(i, copy_layers, ...)
+        error_train[i] = get_error(ds.train_data, ...)
+        error_valid[i] = get_error(ds.valid_data, ...)
 
-    return error_train, error_valid, accuracy.max()
+        progress_bar(i, iterations)
+
+    return error_train, error_valid, accuracy
 \end{lstlisting}
-Per ogni iterazione è compiuta una predizione per ogni input del dataset chiamando il metodo \texttt{forward\_prop}, per poi eseguire l'algoritmo di back propagation determinando l'errore compiuto. Dall'errore compiuto sono calibrati valori dei pesi e dei basi con il metodo \texttt{update\_params}. \\
+Per ogni iterazione è compiuta una predizione su tutti gli input del dataset chiamando il metodo \texttt{forward\_prop}, per poi eseguire l'algoritmo di back propagation determinando l'errore compiuto. Dall'errore compiuto sono calibrati valori dei pesi e dei basi con il metodo \texttt{update\_params}. \\
 Il metodo di propagazione in avanti è definito come :
 \begin{lstlisting}[language=Python]
 def forward_prop(X, layers):
     input_layer = X
     for layer in layers:
         layer.forward_prop(input_layer)
-        input_layer = layer.A
+        input_layer = layer.Z
 
 class Layer:
     # ... other functions
     def forward_prop(self, input):
-        self.Z = self.W.dot(input) + self.B
-        self.A = self.activation(self.Z)
+        self.A = self.W.dot(input) + self.B
+        self.Z = self.activation(self.A)
 \end{lstlisting}
 Nel quale ad ogni passo è ridefinita la variabile \texttt{input\_layer} come output dello strato precedente, assegnando allo strato successivo i valori del dataset. \\
+La regola eseguita per il calcolo del valore di output del singolo nodo è:
+\begin{equation}
+a_{i} = (\sum_{j} w_{i,j} z_j ) + b_i
+\end{equation}
+\begin{equation}
+z_{i} = f_i(a_i)
+\end{equation}
 L'algoritmo di back propagation è definito come:
 \begin{lstlisting}[language=Python]
 def backward_prop(X, one_hot_Y, layers, error_deriv):
@@ -183,22 +197,24 @@ class Layer:
         self.dW = self.dZ.dot(input.T)
         self.db = np.sum(self.dZ)
 \end{lstlisting}
-La funzione raccoglie prima i valori di output di ogni strato nel vettore \texttt{input\_layers} per poi calcolare i valori delta $\delta$ e le corrispettive derivate delle funzioni di attivazione sui valori di output determinati. Il ciclo sfrutta di passi i iterazione per determinare il delta dello strato successivo iterando la rete dall'ultimo al primo strato. \\
-La definizione delle funzioni si basa sul calcolo ricorsivo del delta per lo strato corrente.
-Il delta è calcolato secondo due regole che discriminano la tipologia di strato sul quale è calcolato; da qui in poi $\delta_L$ denota il valore calcolato sull'ultimo strato, $\delta_h$ denota il valore di uno dei qualsiasi strati interni.
-\begin{align*}
-\delta_L = g^{\prime}_L(A^L) * \frac{\partial E}{\partial y_k}
-\end{align*}
-Nella formula il primo termine indica la derivata della funzione di attivazione dello strato di output , il secondo indica la derivata della funzione di errore rispetto al valore di uscita prodotto dallo strato. \\
+La funzione raccoglie prima i valori di output di ogni strato nel vettore \texttt{input\_layers} per poi calcolare i valori delta $\delta$ e le corrispettive derivate delle funzioni di attivazione sui valori di output determinati. I valori associati ai delta sono determinati iterando gli strati della rete partendo dall' output.
+Il delta è calcolato secondo due regole che discriminano la tipologia di strato sul quale è calcolato: da qui in poi $\delta_L$ denota il valore calcolato sull'ultimo strato, $\delta_h$ denota il valore di uno dei qualsiasi strati interni.
+\begin{equation}
+\delta^L_i = g^{\prime}(a_i) * \frac{\partial E}{\partial y_i}
+\end{equation}
+Nella formula il primo termine indica la derivata della funzione di attivazione dello strato di output , il secondo indica la derivata parziale della funzione di errore rispetto al valore di uscita prodotto dallo strato. \\
 La seguente formula descrive il calcolo del delta per gli strati interni:
-\begin{align*}
+\begin{equation}
 \delta_i^l = g^{\prime}_h(a^l_i) * \sum^{ml+1}_{j=1}{W_{j,i}^{l+1} \delta_j^{l+1}}
-\end{align*}
+\end{equation}
 I pedici $i$ e $j$ indicano i neuroni considerati. Al contempo considerando $A^l$ come la matrice degli input, $W^l$ matrice dei pesi e $\delta^l$ i delta dei neuroni dello strato corrente, allora :
-\begin{align*}
+\begin{equation}
+\delta^L = g^{\prime}(A^L) * \frac{\partial E}{\partial y}
+\end{equation}
+\begin{equation}
 \delta^l = g^{\prime}_h(A^l) * (W^{l+1})^T \delta^{l+1}
-\end{align*}
-L'algoritmo della back propagation implementato sfrutta proprio il concetto di matrici: i dati sono raggruppati in matrici facilitando la scrittura del codice e ottenendo una maggiore efficienza in combinazione con un aggiornamento di tipo batch.\\
+\end{equation}
+L'algoritmo della back propagation implementato sfrutta proprio il concetto di matrici: i dati sono raggruppati in matrici facilitando la scrittura del codice e ottenendo una maggiore efficienza in combinazione con un aggiornamento per la discesa del gradiente di tipo batch.\\
 L'algoritmo di aggiornamento dei pesi si basa su un aggiornamento di tipo \underline{batch}: tutti i pesi della rete sono aggiornati simultaneamente dopo aver derivato l'errore compiuto durante la singola iterazione d'apprendimento.\\
 L'algoritmo di aggiornamento è composto da:
 \begin{lstlisting}[language=Python]
@@ -217,72 +233,77 @@ class Layer:
         self.B += self.db
 \end{lstlisting}
 La regola applicata è la seguente:
-\begin{align*}
-w_{i,j} = w_{i,j} (- \eta * \frac{d}{dw_{i,j}}E^t + \alpha \cdot \Delta w_{i,j}^{t-1})
-\end{align*}
-La regola di aggiornamento della discesa del gradiente, applicata considerando il parametro \texttt{momento}, considera il precedente valore assunto dal parametro con un tasso variabile indicato proprio dal momento $\alpha$. Il parametro risulta particolarmente utile per superare regioni di plateau, dove il valore e la direzione del peso rimangono invariati.  \\
-La regola della discesa del gradiente deriva il nuovo valore assoluto dalla moltiplicazione tra \texttt{learing\_rate} e derivata parziale della funzione di errore rispetto al peso corrente $w_{i,j}$. Un learning rate alto può portare una rapida convergenza del modello, rischiando di saltare un eventuale minimo globale o di oscillare intorno ad esso. Al contempo un valore basso per un caso specifico può causare aggiornamenti più piccoli, rallentando la convergenza. Allo stesso modo è di cruciale importanza porre un giusto valore al parametro $\alpha$.
+\begin{equation}
+w_{i,j} = w_{i,j} -  \eta * \frac{d}{dw_{i,j}}E^t + \alpha \cdot \Delta w_{i,j}^{t-1}
+\end{equation}
+La regola di aggiornamento della discesa del gradiente, applicata considerando il parametro \texttt{momento}, considera il precedente valore assunto dal parametro, $\Delta w_{i,j}^{t-1}$, con un tasso variabile indicato proprio dal momento $\alpha$. Il parametro risulta particolarmente utile per superare regioni di plateau, dove il valore e la direzione del peso rimangono invariati.  \\
+La regola della discesa del gradiente deriva il nuovo valore assoluto dalla moltiplicazione tra \texttt{learning\_rate} e derivata parziale della funzione di errore rispetto al peso corrente $w_{i,j}$. Un learning rate alto può portare una rapida convergenza del modello rischiando però di saltare un eventuale minimo globale o di oscillare intorno ad esso. Al contempo un valore basso per un caso specifico può causare aggiornamenti più piccoli, rallentando la convergenza. Allo stesso modo è di cruciale importanza porre un giusto valore al parametro $\alpha$ e scegliere la giusta combinazione dei parametri.
 
 \section{Funzioni applicate}
 Di seguito sono presentate le funzioni applicate durante la fase di training e di evaluation dei risultati ottenuti, correlate da definizione matematica. Le funzioni denotate con $'$ sono le corrispondenti derivate parziali della funzione in esame.
 \subsection{Funzione softmax}
 La funzione softmax è una funzione applicata all'output della rete con lo scopo di \underline{normalizzare i risultati} ottenuti durante il processo di training. Il processo di normalizzazione applicato dalla funzione deriva da valori grezzi ricavati dai nodi di output di una rete, applicata su un problema di classificazione, e produce un vettore di probabilità che indica quanto l'input in esame appartenga alla classe considerata. Formula matematica:
-\begin{align*}
+\begin{equation}
 \text{S}(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{N} e^{z_j}}
-\end{align*}
+\end{equation}
 L'input $z_i$ della funzione è l'output di un nodo dell'ultimo strato e tale valore utilizzato come esponente di $e$ è diviso dalla somma di tutti i valori di output anch'essi posti come esponente della costante $e$.
 \subsection{Funzione tanh}
 La funzione tanh calcola la tangente iperbolica del valore di input. La tangente iperbolica è una funzione che mappa i valori in un intervallo compreso tra -1 e 1 ed è simmetrica rispetto all'origine.\\
 Formule:
 Formula matematica:
-\begin{align*}
+\begin{equation}
 \text{tanh}(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}} 
-\end{align*}
-\begin{align*}
+\end{equation}
+\begin{equation}
 \text{tanh}^{\prime}(x) = 1 - tanh(x)^2
-\end{align*}
+\end{equation}
 \subsection{Funzione sigmoide}
 La funzione sigmoide traforma il valore di input in un valore compreso tra 0 ed 1. Per valori sempre più elevati il valore di ritorno dela funzione tende ad 1, in maniera speculare il valore tende a 0.
-\begin{align*}
+\begin{equation}
 sigmoid(x) = \frac{1}{(1 + exp(-x))}
-\end{align*}
-\begin{align*}
+\end{equation}
+\begin{equation}
 sigmoid^{\prime}(x) = sigmoid(x)(1 - sigmoid(x))
-\end{align*}
+\end{equation}
 \subsection{Funzione di errore cross-entropy}
 La funzione cross entropy è una funzione che misura la discrepanza tra i valori predetti e valori target di un apprendimento di tipo supervisionato ed è applicata nei problemi di classificazione.
-\begin{align*}
+\begin{equation}
 CE(p,q) = -\sum_{i} p(i) \log(q(i))
-\end{align*}
-\begin{align*}
+\end{equation}
+\begin{equation}
 CE(p,q)^{\prime}= -\frac{p(i)}{q(i)}
-\end{align*}
-La funzione compara i valori di due distribuzioni di probabilità e nei casi in cui la funzione di attivazione dell'ultimo strato di una rete neurale non applichi una formula di normalizzazione dei valori rispetto alle probabilità di appartenenza nelle classi, risulta necessario ridefinire la funzione di errore includendo tale fase con ad esempio il softmax.\\
+\end{equation}
+Nei casi in cui la funzione di attivazione dell'ultimo strato non applichi una formula di normalizzazione dei valori, così da poter comparare i risultati ottenuti con i valori target, risulta necessario ridefinire la funzione di errore includendo tale fase; un esempio è la funzione cross entropy applicata con softmax.\\
 La regola della funzione cross entropy applicata con softmax è :
-\begin{align*}
+\begin{equation}
 CE(p,q) = -\sum_{i} p(i) \log(q(i))
-\end{align*}
-\begin{align*}
+\end{equation}
+\begin{equation}
 CE(p,q)^{\prime} = -\frac{p(i)}{q(i)}
-\end{align*}
+\end{equation}
 \subsection{Funzione sum of squares}
-La funzione sum of squares calcola attraverso l'elevamento a potenza e della sottrazione, la differenza tra due distribuzioni di probabilità ed è comunemente utilizzata nei problemi di regressione.
-\begin{align*}
+La funzione sum of squares calcola attraverso l'elevamento la differenza dei valori forniti, la differenza tra due distribuzioni di probabilità. La funzione è comunemente utilizzata nei problemi di regressione.
+\begin{equation}
 \text{s}(x) = \sum_{i=1}^{n} (y_i - t_i)^2
-\end{align*}
-\begin{align*}
+\end{equation}
+\begin{equation}
 \frac{\partial \text{s}(x)}{\partial x_i} = 2 (y_i - t_i)
-\end{align*}
+\end{equation}
 
 \section{Calcolo accuratezza}
 Il calcolo dell'accuratezza è compiuto eseguendo la divisione tra il numero di elementi correttamente predetti e il numero totale di input del caso di test.
-\begin{align*}
+\begin{equation}
 \text{accuracy} = \frac{\text{\# label corrette}}{\text{\# totale label}}
-\end{align*}
+\end{equation}
 
 \section{Fase di Analisi}
 I dati raccolti durante la fase di addestramento sono poi interpretati con grafici nella fase di analisi. \\
-La fase di analisi è compiuta dalla classe \texttt{Analysis} che ad ogni esecuzione di nuovo addestramento e con una nuova combinazione dei parametri definiti dall'utente, raccoglie: l'errore compiuto sul training e validation set, oltre che l'accuratezza ottenuta, ad ogni epoca, sul test set. \\
+La fase di analisi è compiuta dalla classe \texttt{Analysis} che ad ogni esecuzione di nuovo addestramento e con una nuova combinazione dei parametri definiti dall'utente, raccoglie: 
+\begin{itemize}
+    \item l'errore compiuto sul training set
+    \item l'errore compiuto sul validation set
+    \item accuratezza sul test set
+\end{itemize}
 \begin{lstlisting}[language=Python]
 class Analysis:
     def __init__(self):
@@ -311,7 +332,13 @@ class Analysis:
         plt.savefig(self.get_result_path_error(...))
         plt.close()
 
-    def get_result_path_error(self, name):
-        return os.path.join(os.getcwd(), "results/errors", name + ".png")
+    def init_logs(self):
+        with open("results/events.log","a") as file:
+            file.write(datetime.datetime.now())
+
+    def write_logs(self, event):
+        line = '\n' + event + datetime.datetime.now()
+        with open("results/events.log","a") as file:
+            file.write(line)
 \end{lstlisting}
-Il metodo \texttt{partial} raccoglie i risultati ottenuti ad ogni addestramento, mentre il metodo \texttt{save\_charts()} salva i risultati in un grafico che compara l'andamento dell'errore compiuto sul training set e sul validation set per covare eventuali casi di overfitting, ad esempio.
+Il metodo \texttt{partial} raccoglie i risultati ottenuti ad ogni addestramento e col metodo \texttt{savefig()} salva in memoria i risultati che comparano l'andamento dell'errore compiuto sul training set e sul validation set. Mentre il metodo \texttt{init\_logs()} scrive informazioni varie dei test che saranno eseguiti, mentre \texttt{write\_logs()} scrive l'accuratezza ottenuta dal test.

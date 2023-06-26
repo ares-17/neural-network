@@ -57,7 +57,7 @@ class Dataset:
         2. resizing the dimensions to 2
         3. normalization with respect to the value 255
         """
-        #data = self.resize_images(data)
+        data = self.resize_images(data)
         shape = (data.shape[0], data.shape[1] * data.shape[1])
         data = data.reshape(shape)
         data = data.T
@@ -65,7 +65,7 @@ class Dataset:
 
         return data
 
-    def resize_images(self, data, dim_img = 28):
+    def resize_images(self, data, dim_img = 14):
         resized_matrix = np.zeros((data.shape[0], dim_img, dim_img))
         for i in range(data.shape[0]):
             original_image = data[i]

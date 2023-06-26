@@ -5,15 +5,13 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from keras.datasets import mnist
 
 class Dataset:
-    def __init__(self, shuffle=False, validation_ratio=0.2, training_size=10000, test_size=2500):
+    def __init__(self, shuffle=False, validation_ratio=0.2):
         self.train_data, self.train_label, self.test_data,  \
             self.test_label, self.valid_data, self.valid_label = \
                 None, None, None, None, None, None
 
         self.shuffle = shuffle
         self.validation_ratio = validation_ratio
-        self.training_size = training_size
-        self.test_size = test_size
         self.data()
 
     def data(self):
@@ -22,12 +20,7 @@ class Dataset:
         Only on train and test dataset performs certain operations that simplify its access 
         """
         (self.train_data, self.train_label), (self.test_data, self.test_label) = mnist.load_data()
-
-        #self.train_data = self.train_data[:self.training_size]
-        #self.train_label = self.train_label[:self.training_size]
-
-        #self.test_data = self.test_data[:self.test_size]
-        #self.test_label = self.test_label[:self.test_size]
+        
 
         if self.shuffle:
             self.train_data, self.train_label = self.permutation(self.train_data, self.train_label)

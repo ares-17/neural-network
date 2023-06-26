@@ -95,7 +95,7 @@ def train(ds: Dataset, layers, alpha, iterations, error_function):
         backward_prop(ds.train_data, ds.train_label, layers, error_function["derivative"])
         update_params(alpha, layers)
 
-        copy_layers = [layers[0].copy(), layers[1].copy()]
+        copy_layers = [l.copy() for l in layers]
         accuracy[i] = current_accuracy(i, copy_layers, ds.test_data , ds.test_label)
         error_train[i] = get_error(ds.train_data, ds.train_label, copy_layers, error_function["function"])
         error_valid[i] = get_error(ds.valid_data, ds.valid_label, copy_layers, error_function["function"])

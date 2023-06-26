@@ -1,5 +1,6 @@
 from train import *
 import os
+import datetime
 
 class Analysis:
     def __init__(self):
@@ -31,5 +32,11 @@ class Analysis:
     def get_result_path_error(self, name):
         return os.path.join(os.getcwd(), "results/errors", name + ".png")
 
-    def get_result_path_accuracy(self, name):
-        return os.path.join(os.getcwd(), "results/accuracies", name + ".png")
+    def init_logs(self):
+        with open("results/events.log","a") as file:
+            file.write(datetime.datetime.now().strftime('\n\nStarting test at %H:%M:%S - %d/%m/%Y'))
+
+    def write_logs(self, event):
+        line = '\n' + event + datetime.datetime.now().strftime(', at %H:%M:%S - %d/%m/%Y')
+        with open("results/events.log","a") as file:
+            file.write(line)

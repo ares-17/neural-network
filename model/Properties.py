@@ -40,10 +40,11 @@ class Properties:
     def __init__(self, filename):
         self.neurons = None
         self.momentum = None
-        self.epochs = None
+        self.epochs = 100
         self.learning_rate = None
         self.act_function = None
         self.error_function = None
+        self.hidden_layers = 1
         self.read_file(filename)
 
     def read_file(self, filename):
@@ -56,6 +57,7 @@ class Properties:
         configurarion = config.get("main", "configuration")
 
         self.neurons = [int(num) for num in config.get(configurarion, "neurons").split(',')]
+        self.hidden_layers = int(config.get(configurarion, "hidden_layers"))
         self.momentum = [float(num) for num in config.get(configurarion, "momentum").split(',')]
         self.epochs = int(config.get(configurarion, "epochs"))
         self.learning_rate = [float(num) for num in config.get(configurarion, "learning_rate").split(',')]
